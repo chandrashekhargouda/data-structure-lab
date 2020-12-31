@@ -1,73 +1,87 @@
 #include <stdio.h>
-#include <malloc.h>
-
-typedef struct Node {
-  int data;
-  struct Node *left, *right;
-} node;
-
-node *newNode(int data) {
-  node *temp = (node*) malloc (sizeof(node));
-  temp->data = data;
-  temp->left = temp->right = NULL;
+#include <stdlib.h>
+struct node {
+  int info;
+  struct node *llink,*rlink;
+};typedef struct node *Node;
+Node getnode(int item) {
+  Node temp = (Node )malloc(sizeof(struct node));
+  temp->info = item;
+  temp->llink = temp->rlink = NULL;
   return temp;
 }
-
-void inorder(node *root) {
-  if (root != NULL) {
-    inorder(root->left);
-    printf("%d ", root->data);
-    inorder(root->right);
-  }
-}
-
-void preorder(node *root) {
-  if (root != NULL) {
-    printf("%d ", root->data);
-    inorder(root->left);
-    inorder(root->right);
-  }
-}
-
-void postorder(node *root) {
-  if (root != NULL) {
-    inorder(root->left);
-    inorder(root->right);
-    printf("%d ", root->data);
-  }
-}
-
-node *insert(node *node, int data) {
+Node insert(Node node, int info) {
   if (node == NULL)
-    return newNode(data);
-  
-  if (data < node->data)
-    node->left = insert(node->left, data);
+    return getnode(info);
+  if (info < node->info)
+    node->llink = insert(node->llink, info);
   else
-    node->right = insert(node->right, data);
-  
+    node->rlink = insert(node->rlink, info);
   return node;
 }
-
-int main(void) {
-  node *root = NULL;
-
-  root = insert(root, 6);
-  root = insert(root, 4);
-  root = insert(root, 9);
-  root = insert(root, 35);
-  root = insert(root, 25);
-  root = insert(root, 55);
-  root = insert(root, 1);
-  root = insert(root, 50);
-  root = insert(root, 10);
-
-  printf("Inorder traversal: \n");
-  inorder(root);
-
-  printf("\n\nPreorder traversal: \n");
-  preorder(root);
-
-  printf("\n\nPostorder traversal: \n");
-  postorder(root);
+void preorder(Node root) {
+  if(root == NULL){
+    return;
+  }
+  printf("%d -> ",root->info);
+  preorder(root->llink);
+  preorder(root->rlink);
+}
+void inorder(Node root) {
+  if(root == NULL){
+    return;
+  }
+  inorder(root->llink);
+  printf("%d -> ",root->info);
+  inorder(root->rlink);
+}
+void postorder(Node root) {
+  if(root == NULL){
+    return;
+  }
+  postorder(root->llink);
+  postorder(root->rlink);
+  printf("%d -> ",root->info);
+}
+void display(Node root,int i)
+{
+  int j;
+  if(root!=NULL)
+  {
+    display(root->rlink,i+1);
+    for(j=0;j<i;j++)
+      printf("  ");
+    printf("%d\n",root->info);
+    display(root->llink,i+1);
+  }
+}
+int main(){
+  Node root = NULL;
+  int choice,item;
+  for(;;){
+    printf("\n1.Insert\n2.Preorder\n3.Inorder\n4.Postorder\n5.Display\n6.exit\n");
+    printf("Enter choice : ");
+    scanf("%d",&choice);
+    switch(choice){
+      case 1:printf("Enter item to be inserted : ");
+            scanf("%d",&item);
+            root = insert(root,item);
+            break;
+      case 2:printf("Preorder traversal: ");
+          preorder(root);
+            break;
+      case 3:printf("Inorder traversal: ");
+            inorder(root);
+            break;
+      case 4:printf("Postorder traversal: ");
+            postorder(root);
+            break;
+      case 5:display(root,0);
+            break;
+      case 6:exit(0);
+      default:printf("Enter proper instructions!!\n");
+            break;
+    }
+  }
+  return 0;
 }
