@@ -1,66 +1,70 @@
 #include<stdio.h>
 #include<ctype.h>
-int stack[20];
+
+char stack[100];
 int top = -1;
 
-void push(int x)
+void push(char x)
 {
     stack[++top] = x;
 }
 
-int pop()
+char pop()
 {
-    return stack[top--];
+    if(top == -1)
+        return -1;
+    else
+        return stack[top--];
 }
 
-int main()
+int priority(char x)
 {
-    char exp[20];
-    
-    int n1,n2,n3,num;
-    printf("Enter the Postfix expression :: ");
+    if(x == '(')
+        return 0;
+    if(x == '+' || x == '-')
+        return 1;
+    if(x == '*' || x == '/')
+        return 2;
+    return 0;
+}
+
+int main(void)
+{
+    char exp[100];
+    char *e, x, *postFix;
+    int i = 0;
+    printf("Enter the expression : ");
     scanf("%s",exp);
-    int i=0;
-    while(exp[i]!= '\0')
+    printf("\n");
+    e = exp;
+    
+    while(*e != '\0')
     {
-        if(isdigit(exp[i]))
+        if(isalnum(*e))
+            printf("%c ",*e);
+        else if(*e == '(')
+            push(*e);
+        else if(*e == ')')
         {
-            num = exp[i] - 48;
-            push(num);
+            while((x = pop()) != '(')
+                printf("%c ", x);
         }
         else
         {
-            n2 = pop();
-            n1 = pop();
-            switch(exp[i])
-            {
-            case '+':
-            {
-                n3 = n1 + n2;
-                break;
-            }
-            case '-':
-            {
-                n3 = n1 - n2;
-                break;
-            }
-            case '*':
-            {
-                n3 = n1 * n2;
-                break;
-            }
-            case '/':
-            {
-                n3 = n1 / n2;
-                break;
-            }
-            }
-            push(n3);
+            while(priority(stack[top]) >= priority(*e))
+                printf("%c ",pop());
+            push(*e);
         }
+        e++;
+    }
+    
+    while(top != -1)
+    {
+        postFix[i] = pop();
         i++;
     }
-    printf("\nThe result of expression %s  =  %d\n\n",exp,pop());
-    return 0;
-}
-   	
+
+    for (int j = 0; j <= i; j++)
+      printf("%c", postFix[j]);
+}  	
 
